@@ -1,0 +1,80 @@
+- How parsing and execution of queries work
+  - Lex (mentioned above) is the "compiled" query, that is the output from
+  - THD is the "run-time" state of a connection, containing all that is
+  - Item_*:  During parsing, all data is translated into "items", objects of
+- How to fit Stored Procedure into this scheme
+  - An overview of the classes and files for stored procedures
+    - class sp_head (sp_head.{cc,h})
+    - class sp_pcontext (sp_pcontext.{cc,h}
+    - class sp_instr (sp_head.{cc,h})
+      - sp_instr_stmt
+      - sp_instr_set
+      - sp_instr_jump
+      - sp_instr_jump_if_not
+      - sp_instr_freturn
+    - class sp_rcontext (sp_rcontext.h)
+    - class Item_splocal (Item.{cc,h})
+    - Utility functions (sp.{cc,h})
+  - Parsing CREATE PROCEDURE ...
+    - Parameters:
+    - Declared local variables:
+    - Local Variable references:
+    - Statements:
+    - SET var:
+    - Flow control:
+        - Forward jumps: When jumping forward, the exact destination is not
+        - Loop constructs have optional labels. If a loop doesn't have a
+        - There are two types of CASE. The "simple" case is implemented
+    - A simple example
+  - Parsing CREATE FUNCTION ...
+  - Storing, caching, dropping...
+  - CALLing a procedure
+    - USE database
+      - It's possible to write "general" procedures that are independent of
+      - It's possible to write procedures that work on a particular database
+    - Evaluating Items
+      - When SETing a variable
+      - When CALLing a procedure
+      - When testing an expression for a branch (in IF, WHILE, etc)
+  - Calling a FUNCTION
+    - Detecting and parsing a FUNCTION invocation
+    - Collecting FUNCTIONs to invoke
+      - We can't read and parse the FUNCTION from the mysql.proc table at the
+  - Parsing DROP PROCEDURE/FUNCTION
+  - Condition and Handlers
+    - sp_instr_hpush_jump
+    - sp_instr_hpop
+    - Examples:
+      - EXIT handler
+      - CONTINUE handler
+  - Cursors
+    - sp_instr_cpush
+    - sp_instr_cpop
+    - sp_instr_copen
+    - sp_instr_cfetch
+    - sp_instr_cclose
+    - Example:
+  - The SP cache
+  - Class and function APIs
+    - The parser context: sp_pcontext.h
+    - The run-time context (call frame): sp_rcontext.h
+    - The procedure: sp_head.h
+    - Instructions
+      - The base class:
+      - Statement instruction:
+     -  SET instruction:
+      - Unconditional jump
+      - Conditional jump
+      - Return a function value
+      - Push a handler and jump
+      - Pops handlers
+      - Return from a CONTINUE handler
+      - Push a CURSOR
+      - Pop CURSORs
+      - Open a CURSOR
+      - Close a CURSOR
+      - Fetch a row with CURSOR
+    - Utility functions: sp.h
+    - The cache: sp_cache.h
+  - The mysql.proc schema:
+ --
